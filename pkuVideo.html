@@ -75,7 +75,7 @@
     <script>
         function checkPattern() {
             var inputText = document.getElementById("textInput").value;
-            var mp4Pattern = /http:\/\/resourcese\.pku\.edu\.cn\/play\/video\/vod\/httpDownload\/Source\/\d*\/\d*\/\d*\/[a-zA-Z0-9]+\.mp4\?.*/;
+            var mp4Pattern = /http.+\.mp4\?.*/;
             var m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d*\/\d*\/\d*\/([a-zA-Z0-9]+)\/0\/playlist\.m3u8\?.*/;
 
             if (mp4Pattern.test(inputText)) {
