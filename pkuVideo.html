@@ -92,7 +92,7 @@
         function checkPattern() {
             var inputText = document.getElementById("textInput").value;
             var mp4Pattern = /http.+\.mp4\?.*/;
-            var m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d*\/\d*\/\d*\/([a-zA-Z0-9]+)\/0\/playlist\.m3u8\?.*/;
+            var m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
 
             if (mp4Pattern.test(inputText)) {
                 alert("链接为mp4格式, 将跳转到播放页面\nWindows用户点击视频右下角三个圆点, 即可下载视频.");
