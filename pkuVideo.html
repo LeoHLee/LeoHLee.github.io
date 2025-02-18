@@ -58,16 +58,18 @@
             background-color: #0056b3;
         }
 
-        .donation {
+        .bang-birthday {
             text-align: center;
             margin-top: 40px;
-            font-size: 10px;
-            color: #666;
+            font-size: 16px;
+            color: #333;
+            padding: 15px 0;
+            display: none;
         }
 
-        .coin-address {
-            display: inline;
-            margin: 0;
+        .highlight {
+            color: #e91e63;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -76,7 +78,7 @@
         <h1>课堂实录下载</h1>
         <div class="instruction">
             请在观看页面，点击“复制下载地址”后，粘贴到下方输入框中<br/>
-			如果没有找到“复制下载地址”按钮，请向下滚动页面
+            如果没有找到“复制下载地址”按钮，请向下滚动页面
         </div>
         <div class="input-wrapper">
             <input type="text" id="textInput" placeholder="下载地址">
@@ -84,23 +86,75 @@
         </div>
     </div>
 
-    <div class="donation">
-        Donate with USDT(ARB): <span class="coin-address">0xD1633ecaaa885b750500e0733f685a1B400d16b3</span>
+    <div class="container bang-birthday">
+        <div id="birthday-names"></div>
     </div>
 
     <script>
+        // 邦邦生日显示功能
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://bangdreampku.github.io/birthday/birthday.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').slice(1);
+                    const birthdays = rows.map(row => {
+                        const [name, birthday, type] = row.trim().split(',');
+                        return { name, birthday, type };
+                    });
+
+                    const today = getCurrentDateGMT9();
+                    const todayStr = getDateStr(today);
+                    const todayBirthdays = birthdays.filter(b => b.birthday === todayStr);
+
+                    displayBirthdays(todayBirthdays);
+                })
+                .catch(error => console.error('Error fetching the CSV file:', error));
+        });
+
+        function getCurrentDateGMT9() {
+            const now = new Date();
+            const offset = 9;
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (3600000 * offset));
+        }
+
+        function getDateStr(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${month}月${day}日`;
+        }
+
+        function displayBirthdays(birthdays) {
+            const container = document.getElementById('birthday-names');
+            const birthdayContainer = container.parentElement;
+
+            if (!birthdays.length) {
+                birthdayContainer.style.display = 'none';
+                return;
+            }
+
+            birthdayContainer.style.display = 'block';
+            const names = birthdays.map(b => {
+                return b.type === 'ch' 
+                    ? `<span class="highlight">${b.name}</span>` 
+                    : b.name;
+            });
+            container.innerHTML = `${names.join('、')}生日快乐`;
+        }
+
+        // 下载功能
         function checkPattern() {
-            var inputText = document.getElementById("textInput").value;
-            var mp4Pattern = /http.+\.mp4\?.*/;
-            var m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
+            const inputText = document.getElementById("textInput").value;
+            const mp4Pattern = /http.+\.mp4\?.*/;
+            const m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
 
             if (mp4Pattern.test(inputText)) {
                 alert("链接为mp4格式, 将跳转到播放页面\nWindows用户点击视频右下角三个圆点, 即可下载视频.");
                 window.location.href = inputText;
             } else if (m3u8Pattern.test(inputText)) {
-                var matches = inputText.match(m3u8Pattern);
-                var hash = matches[1];
-                window.location.href = 'https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/downloadVideo.action?resourceId=' + hash;
+                const matches = inputText.match(m3u8Pattern);
+                const hash = matches[1];
+                window.location.href = `https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/downloadVideo.action?resourceId=${hash}`;
             } else {
                 window.location.href = inputText;
             }
