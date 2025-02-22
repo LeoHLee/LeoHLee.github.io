@@ -67,10 +67,12 @@
             display: none;
         }
 
-        .highlight {
+        #birthday-names a {
             color: #e91e63;
-            font-weight: bold;
+            text-decoration: none;
         }
+
+        
     </style>
 </head>
 <body>
@@ -134,11 +136,10 @@
             }
 
             birthdayContainer.style.display = 'block';
-            const names = birthdays.map(b => {
-                return b.type === 'ch' 
-                    ? `<span class="highlight">${b.name}</span>` 
-                    : b.name;
-            });
+            
+            const names = birthdays.map(b => 
+                `<a href="https://zh.moegirl.org.cn/${encodeURIComponent(b.name)}" target="_blank">${b.name}</a>`
+            );
             container.innerHTML = `${names.join('、')}生日快乐`;
         }
 
