@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课堂实录下载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .instruction {
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper {
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 80px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .bang-birthday {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            max-width: 24rem;
+            padding: 0.7rem 0;
+            display: none;
+        }
+
+        #birthday-names a {
+            color: #e91e63;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>课堂实录下载</h1>
+        <div class="instruction">
+            请在观看页面，点击“复制下载地址”后，粘贴到下方输入框中<br/>
+            如果没有找到“复制下载地址”按钮，请向下滚动页面
+        </div>
+        <div class="input-wrapper">
+            <input type="text" id="textInput" placeholder="下载地址">
+            <button onclick="checkPattern()">下载</button>
+        </div>
+    </div>
+
+    <div class="bang-birthday container">
+        <div id="birthday-names"></div>
+    </div>
+
+    <script>
+        // 邦邦生日显示功能
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('https://bangdreampku.github.io/birthday/birthday.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.split('\n').slice(1);
+                    const birthdays = rows.map(row => {
+                        const [name, birthday, type] = row.trim().split(',');
+                        return { name, birthday, type };
+                    });
+
+                    const today = getCurrentDateGMT9();
+                    const todayStr = getDateStr(today);
+                    const todayBirthdays = birthdays.filter(b => b.birthday === todayStr);
+
+                    displayBirthdays(todayBirthdays);
+                })
+                .catch(error => console.error('Error fetching the CSV file:', error));
+        });
+
+        function getCurrentDateGMT9() {
+            const now = new Date();
+            const offset = 9;
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            return new Date(utc + (3600000 * offset));
+        }
+
+        function getDateStr(date) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${month}月${day}日`;
+        }
+
+        function displayBirthdays(birthdays) {
+            const container = document.getElementById('birthday-names');
+            const birthdayContainer = container.parentElement;
+
+            if (!birthdays.length) {
+                birthdayContainer.style.display = 'none';
+                return;
+            }
+
+            birthdayContainer.style.display = 'block';
+            
+            const names = birthdays.map(b => 
+                `<a href="https://zh.moegirl.org.cn/${encodeURIComponent(b.name)}" target="_blank">${b.name}</a>`
+            );
+            container.innerHTML = `${names.join('、')}生日快乐`;
+        }
+
+        // 下载功能
+        function checkPattern() {
+            const inputText = document.getElementById("textInput").value;
+            const mp4Pattern = /http.+\.mp4\?.*/;
+            const m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
+
+            if (mp4Pattern.test(inputText)) {
+                alert("链接为mp4格式, 将跳转到播放页面\nWindows用户点击视频右下角三个圆点, 即可下载视频.");
+                window.location.href = inputText;
+            } else if (m3u8Pattern.test(inputText)) {
+                const matches = inputText.match(m3u8Pattern);
+                const hash = matches[1];
+                window.location.href = `https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/downloadVideo.action?resourceId=${hash}`;
+            } else {
+                window.location.href = inputText;
+            }
+        }
+    </script>
+</body>
+</html>
