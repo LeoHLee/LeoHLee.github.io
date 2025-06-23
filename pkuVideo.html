@@ -1,69 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>课堂实录下载</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
-        h1 {
-            text-align: center;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f7fa;
             color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
             max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .instruction {
+            overflow: hidden;
             margin-bottom: 20px;
         }
 
+        .card {
+            padding: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .instruction {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border-left: 3px solid #3498db;
+        }
+
+        .instruction ol {
+            padding-left: 20px;
+        }
+
+        .instruction li {
+            margin-bottom: 8px;
+        }
+
+        .input-section {
+            margin-bottom: 15px;
+        }
+
         .input-wrapper {
-            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
-        input[type="text"] {
-            width: calc(100% - 80px);
-            padding: 10px;
+        .url-input {
+            flex: 1;
+            padding: 12px 16px;
             font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
             outline: none;
+            transition: border-color 0.2s;
         }
 
-        button {
-            padding: 10px 20px;
+        .url-input:focus {
+            border-color: #3498db;
+        }
+
+        .url-input::placeholder {
+            color: #999;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
             font-size: 16px;
-            background-color: #007bff;
-            color: #fff;
+            font-weight: 500;
+            background-color: #3498db;
+            color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.2s;
+            min-width: 100px;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .action-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .action-btn:active {
+            background-color: #2472a4;
+        }
+
+        .action-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            display: none;
+        }
+
+        .status-text {
+            font-size: 15px;
+            color: #333;
         }
 
         .bang-birthday {
             text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            max-width: 24rem;
-            padding: 0.7rem 0;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
             display: none;
         }
 
@@ -73,29 +146,59 @@
             text-decoration: none;
         }
 
-        
+        #birthday-names a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .input-wrapper {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>课堂实录下载</h1>
-        <div class="instruction">
-            请在观看页面，点击“复制下载地址”后，粘贴到下方输入框中<br/>
-            如果没有找到“复制下载地址”按钮，请向下滚动页面
-        </div>
-        <div class="input-wrapper">
-            <input type="text" id="originURL" placeholder="下载地址" autocomplete="off">
-            <button onclick="checkPattern()">下载</button>
+        <div class="card">
+            <h1>课堂实录下载</h1>
+            
+            <div class="instruction">
+                <ol>
+                    <li>在观看页面找到视频播放器，点击"复制下载地址"按钮</li>
+                    <li>如果页面没有该按钮，请向下滚动查找</li>
+                    <li>将复制的链接粘贴到下方输入框中</li>
+                </ol>
+            </div>
+            
+            <div class="input-section">
+                <div class="input-wrapper">
+                    <input type="text" id="originURL" class="url-input" placeholder="粘贴下载地址..." autocomplete="off">
+                    <button id="actionBtn" class="action-btn" disabled>下载</button>
+                </div>
+                
+                <div id="statusBox" class="status-indicator">
+                    <div class="status-text" id="statusText"></div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="bang-birthday container">
+    
+    <div class="bang-birthday">
         <div id="birthday-names"></div>
     </div>
 
     <script>
-        // 邦邦生日显示功能
         document.addEventListener('DOMContentLoaded', function() {
+            const urlInput = document.getElementById('originURL');
+            const actionBtn = document.getElementById('actionBtn');
+            const statusBox = document.getElementById('statusBox');
+            const statusText = document.getElementById('statusText');
+            
+            // 邦邦生日显示功能
             fetch('https://bangdreampku.github.io/birthday/birthday.csv')
                 .then(response => response.text())
                 .then(data => {
@@ -111,9 +214,78 @@
 
                     displayBirthdays(todayBirthdays);
                 })
-                .catch(error => console.error('Error fetching the CSV file:', error));
+                .catch(error => console.error('获取生日数据失败:', error));
+            
+            // 输入框事件监听
+            urlInput.addEventListener('input', function() {
+                const url = this.value.trim();
+                
+                // 隐藏状态框
+                statusBox.style.display = 'none';
+                
+                if (!url) {
+                    // 输入框为空
+                    actionBtn.disabled = true;
+                    return;
+                }
+                
+                // 检测链接类型
+                const type = checkURLType(url);
+                
+                switch(type) {
+                    case 'mp4':
+                        actionBtn.disabled = false;
+                        actionBtn.textContent = '跳转';
+                        statusBox.style.display = 'block';statusText.innerHTML = '链接为mp4格式, 可在播放页面下载<br>Chrome/Edge用户点击视频右下角三个圆点, 即可下载视频.';
+                        break;
+                    case 'm3u8':
+                        const matches = url.match(/https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/);
+                        const hash = matches[1];
+                        actionBtn.disabled = false;
+                        actionBtn.textContent = '下载';
+                        statusBox.style.display = 'block';
+                        statusText.textContent = `检测到资源ID: ${hash}`;
+                        break;
+                    default:
+                        actionBtn.disabled = true;
+                        statusBox.style.display = 'block';
+                        statusText.textContent = '无法识别的链接格式';
+                }
+            });
+            
+            // 按钮点击事件
+            actionBtn.addEventListener('click', function() {
+                const originURL = urlInput.value.trim();
+                if (!originURL) return;
+                
+                const mp4Pattern = /http.+\.mp4\?.*/;
+                const m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
+                
+                if (mp4Pattern.test(originURL)) {
+                    window.location.href = originURL;
+                } else if (m3u8Pattern.test(originURL)) {
+                    const matches = originURL.match(m3u8Pattern);
+                    const hash = matches[1];
+                    window.location.href = `https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/downloadVideo.action?resourceId=${hash}`;
+                }
+            });
         });
-
+        
+        // 检测URL类型
+        function checkURLType(url) {
+            const mp4Pattern = /http.+\.mp4\?.*/;
+            const m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
+            
+            if (mp4Pattern.test(url)) {
+                return 'mp4';
+            } else if (m3u8Pattern.test(url)) {
+                return 'm3u8';
+            } else {
+                return 'other';
+            }
+        }
+        
+        // 邦邦生日功能（保持原始文字格式）
         function getCurrentDateGMT9() {
             const now = new Date();
             const offset = 9;
@@ -132,7 +304,6 @@
             const birthdayContainer = container.parentElement;
 
             if (!birthdays.length) {
-                birthdayContainer.style.display = 'none';
                 return;
             }
 
@@ -142,24 +313,6 @@
                 `<a href="https://zh.moegirl.org.cn/${encodeURIComponent(b.name)}" target="_blank">${b.name}</a>`
             );
             container.innerHTML = `${names.join('、')}生日快乐`;
-        }
-
-        // 下载功能
-        function checkPattern() {
-            const originURL = document.getElementById("originURL").value;
-            const mp4Pattern = /http.+\.mp4\?.*/;
-            const m3u8Pattern = /https:\/\/resourcese\.pku\.edu\.cn\/play\/0\/harpocrates\/\d+\/\d+\/\d+\/([a-zA-Z0-9]+)\/\d+\/playlist\.m3u8\?.*/;
-
-            if (mp4Pattern.test(originURL)) {
-                alert("链接为mp4格式, 将跳转到播放页面\nWindows用户点击视频右下角三个圆点, 即可下载视频.");
-                window.location.href = originURL;
-            } else if (m3u8Pattern.test(originURL)) {
-                const matches = originURL.match(m3u8Pattern);
-                const hash = matches[1];
-                window.location.href = `https://course.pku.edu.cn/webapps/bb-streammedia-hqy-BBLEARN/downloadVideo.action?resourceId=${hash}`;
-            } else {
-                window.location.href = originURL;
-            }
         }
     </script>
 </body>
